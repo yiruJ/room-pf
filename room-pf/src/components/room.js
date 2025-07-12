@@ -16,12 +16,13 @@ export function loadRoomModel() {
         textureOne: textureLoader.load('/textures/FirstTextureSet.webp'),
         textureTwo: textureLoader.load('/textures/SecondTextureSet.webp'),
         textureThree: textureLoader.load('/textures/ThirdTextureSet.webp'),
-        textureFour: textureLoader.load('/textures/FourthTextureSet.webp')
+        textureFour: textureLoader.load('/textures/FourthTextureSet.webp'),
+        textureFive: textureLoader.load('/textures/roomCapsTexture.webp')
     }
 
     return new Promise((resolve, reject) => {
         loader.load(
-            "/models/room_portfolio_compressed.glb", 
+            "/models/room_fixed_compressed.glb", 
             (gltf) => {
                 const model = gltf.scene;
 
@@ -37,8 +38,11 @@ export function loadRoomModel() {
                             child.material = new MeshBasicMaterial({ map: textures.textureTwo});
                         } else if (child.name.toLowerCase().includes("third")) {
                             child.material = new MeshBasicMaterial({ map: textures.textureThree});
-                        } else {
+                        } else if (child.name.toLowerCase().includes("fourth")) {
                             child.material = new MeshBasicMaterial({ map: textures.textureFour});
+                        } else {
+                            // room caps
+                            child.material = new MeshBasicMaterial({ map: textures.textureFive});
                         }
                     }
                 })
