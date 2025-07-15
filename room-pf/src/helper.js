@@ -9,7 +9,7 @@ function configureRaycaster(event, raycaster, mouse, camera, meshes) {
     return raycaster.intersectObjects(meshObjects, true);
 }
 
-export function handleObjectClick(raycaster, mouse, camera, controls, meshes) {
+export function handleObjectClick(raycaster, mouse, camera, controls, meshes, room) {
     window.addEventListener('click', (event) => {
         const intersects = configureRaycaster(event, raycaster, mouse, camera, meshes);
         
@@ -24,13 +24,16 @@ export function handleObjectClick(raycaster, mouse, camera, controls, meshes) {
                 const url = clickedObj.userData.url;
                 window.open(url, '_blank');
             } else if (clickedObj.name.includes("screen")) {
-                // controls.minDistance = 0.1;
-                // controls.enableDamping = false;
-                camera.position.set(99, -2, 1);
-                // camera.lookAt(clickedObj.position);
-                controls.update();
-
+                if (!clickedObj.userData.clicked) {
+                    room.position.x -= 15;
+                    room.position.z -= 15;
+                }
                 
+                clickedObj.userData.clicked = true;
+
+                // open pop-up
+                const popup = document.getElementById('popup');
+                popup.classList.remove('hidden');
             }
         }
     });
@@ -42,6 +45,10 @@ export function handleHoverFeedback(raycaster, mouse, camera, meshes, state) {
         
         if (intersects.length > 0) {
             const hovered = intersects[0].object;
+
+            if (hovered.userData.clicked) {
+                return;
+            }
 
             if (hovered !== state.hoveredObj) {
                 if (state.hoveredObj) {

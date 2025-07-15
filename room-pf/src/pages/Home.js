@@ -19,6 +19,8 @@ export class HomePage {
         this.renderer = new THREE.WebGLRenderer({ antialias: true });
         this.renderer.setSize( window.innerWidth, window.innerHeight );
         this.renderer.setPixelRatio(window.devicePixelRatio);
+        this.renderer.domElement.style.zIndex = '0'; // 👈 Add this line
+
         
         this.controls = new OrbitControls( this.camera, this.renderer.domElement);
         this.controls.enableDamping = true;
@@ -60,8 +62,8 @@ export class HomePage {
         this.controls.maxAzimuthAngle = Math.PI / 6;
 
         // zoom limits
-        // this.controls.maxDistance = 55;
-        // this.controls.minDistance = 30;
+        this.controls.maxDistance = 55;
+        this.controls.minDistance = 30;
         
         // fetch clickable objects
         const clickableObjects = registerCLickableObjects(room);
@@ -71,9 +73,9 @@ export class HomePage {
         const contactLinks = clickableObjects.filter((object) => object.type === "contact");
         handleObjectClick(this.raycaster, this.mouse, this.camera, this.controls, contactLinks);
 
-        // monitor screens
-        const screen = clickableObjects.filter((object) => object.type === "project");
-        handleObjectClick(this.raycaster, this.mouse, this.camera, this.controls, screen);
+        // monitor screens / projects
+        const screens = clickableObjects.filter((object) => object.type === "project");
+        handleObjectClick(this.raycaster, this.mouse, this.camera, this.controls, screens, room);
 
         // sketchbook
         const sketchbook = clickableObjects.filter((object) => object.type === "about");
@@ -82,6 +84,7 @@ export class HomePage {
             requestAnimationFrame(animate);
             this.controls.update();
             this.renderScene();
+
         };
 
         animate();
