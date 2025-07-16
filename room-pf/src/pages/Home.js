@@ -20,7 +20,6 @@ export class HomePage {
         this.renderer.setSize( window.innerWidth, window.innerHeight );
         this.renderer.setPixelRatio(window.devicePixelRatio);
         this.renderer.domElement.style.zIndex = '0'; // 👈 Add this line
-
         
         this.controls = new OrbitControls( this.camera, this.renderer.domElement);
         this.controls.enableDamping = true;
@@ -41,6 +40,7 @@ export class HomePage {
     }
 
     async init() {
+        console.log("hi");
         // load model
         const room = await loadRoomModel();
         this.scene.add(room);
@@ -52,9 +52,8 @@ export class HomePage {
 
         // configure room
         room.rotation.set(0.3, 0.8, 0);
-        room.position.y = -5
-        room.position.x = 0;
-
+        room.position.set(0, -5, 0);
+        
         // rotation limits
         this.controls.maxPolarAngle = Math.PI / 1.75;
         this.controls.minPolarAngle = Math.PI / 2;
@@ -75,7 +74,7 @@ export class HomePage {
 
         // monitor screens / projects
         const screens = clickableObjects.filter((object) => object.type === "project");
-        handleObjectClick(this.raycaster, this.mouse, this.camera, this.controls, screens, room);
+        handleObjectClick(this.raycaster, this.mouse, this.camera, this.controls, screens, room, this.pivot);
 
         // sketchbook
         const sketchbook = clickableObjects.filter((object) => object.type === "about");
@@ -84,7 +83,6 @@ export class HomePage {
             requestAnimationFrame(animate);
             this.controls.update();
             this.renderScene();
-
         };
 
         animate();

@@ -1,3 +1,6 @@
+import gsap from 'gsap';
+import * as THREE from 'three';
+
 function configureRaycaster(event, raycaster, mouse, camera, meshes) {
     // Convert mouse cord from pixel --> NDC for raycaster
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
@@ -24,16 +27,30 @@ export function handleObjectClick(raycaster, mouse, camera, controls, meshes, ro
                 const url = clickedObj.userData.url;
                 window.open(url, '_blank');
             } else if (clickedObj.name.includes("screen")) {
+                
                 if (!clickedObj.userData.clicked) {
-                    room.position.x -= 15;
-                    room.position.z -= 15;
+                    gsap.to(room.position, {
+                        x: room.position.x - 20,
+                        y: room.position.y,
+                        z: room.position.z - 20,
+                        duration: 1, // seconds
+                        ease: "power2.inOut"
+                    });
+
+                    gsap.to(room.rotation, {
+                        y: room.rotation.y + Math.PI / 5,  // rotate 90 degrees
+                        duration: 1,
+                        ease: "power2.inOut"
+                    });
+
+                    controls.enableRotate = false;
                 }
                 
                 clickedObj.userData.clicked = true;
 
-                // open pop-up
-                const popup = document.getElementById('popup');
-                popup.classList.remove('hidden');
+                // // open pop-up
+                // const popup = document.getElementById('popup');
+                // popup.classList.remove('hidden');
             }
         }
     });
