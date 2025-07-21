@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-
 canvas {
   display: block;
   position: absolute;
@@ -10,6 +9,17 @@ canvas {
   left: 0;
   width: 100vw;
   height: 100vh;
+  z-index: 0;
+}
+
+.popup {
+  z-index: 1;
+  position: absolute;
+}
+
+#popup-font {
+  color: #4B3F33;
+  position: relative
 }
 
 body {

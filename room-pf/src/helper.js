@@ -30,15 +30,15 @@ export function handleObjectClick(raycaster, mouse, camera, controls, meshes, ro
                 
                 if (!clickedObj.userData.clicked) {
                     gsap.to(room.position, {
-                        x: room.position.x - 20,
+                        x: room.position.x - 17,
                         y: room.position.y,
-                        z: room.position.z - 20,
+                        z: room.position.z - 8,
                         duration: 1, // seconds
                         ease: "power2.inOut"
                     });
 
                     gsap.to(room.rotation, {
-                        y: room.rotation.y + Math.PI / 5,  // rotate 90 degrees
+                        y: Math.PI / 6,  
                         duration: 1,
                         ease: "power2.inOut"
                     });
@@ -48,9 +48,17 @@ export function handleObjectClick(raycaster, mouse, camera, controls, meshes, ro
                 
                 clickedObj.userData.clicked = true;
 
-                // // open pop-up
-                // const popup = document.getElementById('popup');
-                // popup.classList.remove('hidden');
+                // open pop-up
+                const projectsPopup = document.getElementById('project-popup');
+                projectsPopup.classList.remove('hidden');
+                projectsPopup.classList.add('translate-y-full', 'opacity-0');
+                
+                setTimeout(() => {
+                    requestAnimationFrame(() => {
+                        projectsPopup.classList.remove('translate-y-full', 'opacity-0');
+                        projectsPopup.classList.add('translate-y-0', 'opacity-100');
+                    })
+                }, 300)
             }
         }
     });
