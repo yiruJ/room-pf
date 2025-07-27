@@ -5,7 +5,8 @@ import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 import {
     handleHoverFeedback,
     handleObjectClick,
-    registerCLickableObjects
+    registerCLickableObjects,
+    handleRoomSize
 } from '../helper.js'
 
 export class HomePage {
@@ -40,10 +41,16 @@ export class HomePage {
     }
 
     async init() {
-        console.log("hi");
         // load model
         const room = await loadRoomModel();
         this.scene.add(room);
+
+        const box = new THREE.Box3().setFromObject(room);
+        const center = new THREE.Vector3();
+        box.getCenter(center);
+        room.position.sub(center);
+
+        handleRoomSize(this.renderer, room, this.camera);
         
         // lights
         const light = new THREE.DirectionalLight(0xFFFFFF, 3);

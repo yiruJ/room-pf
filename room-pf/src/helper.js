@@ -21,24 +21,25 @@ export function handleObjectClick(raycaster, mouse, camera, controls, meshes, ro
 
             // only execute function of nearest object
             const clickedObj = intersects[0].object;
-            // console.log(clickedObj);
             // if the object is a contact link
             if (clickedObj.userData.url) {
                 const url = clickedObj.userData.url;
                 window.open(url, '_blank');
             } else if (clickedObj.name.includes("screen")) {
-                
                 if (!clickedObj.userData.clicked) {
+                    const moveDistance = window.innerWidth < 768 ? 5 : 18;
+                    const offset = new THREE.Vector3(-1, 0, -0.5).normalize().multiplyScalar(moveDistance);
+
                     gsap.to(room.position, {
-                        x: room.position.x - 17,
-                        y: room.position.y,
-                        z: room.position.z - 8,
-                        duration: 1, // seconds
+                        x: room.position.x + offset.x,
+                        y: room.position.y + offset.y,
+                        z: room.position.z + offset.z,
+                        duration: 1,
                         ease: "power2.inOut"
-                    });
+                        });
 
                     gsap.to(room.rotation, {
-                        y: Math.PI / 6,  
+                        y: room.rotation.y + Math.PI / 6,
                         duration: 1,
                         ease: "power2.inOut"
                     });
@@ -133,4 +134,20 @@ export function registerCLickableObjects(room) {
     });
 
     return objects;
+}
+
+export function handleRoomSize(renderer, room, camera) {
+    window.addEventListener('resize', () => {
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+
+        camera.aspect = width / height;
+        camera.updateProjectionMatrix();
+
+        renderer.setSize(width, height);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        
+        const scaleFactor = window.innerWidth < 768 ? 0.8 : 1;
+        room.scale.set(scaleFactor, scaleFactor, scaleFactor);
+    });
 }
