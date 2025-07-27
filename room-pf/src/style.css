@@ -17,7 +17,7 @@ canvas {
   position: absolute;
 }
 
-#popup-font {
+.font {
   color: #4B3F33;
   position: relative
 }

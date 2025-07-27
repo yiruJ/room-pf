@@ -6,7 +6,8 @@ import {
     handleHoverFeedback,
     handleObjectClick,
     registerCLickableObjects,
-    handleRoomSize
+    handleRoomSize,
+    controlListeners
 } from '../helper.js'
 
 export class HomePage {
@@ -44,6 +45,8 @@ export class HomePage {
         // load model
         const room = await loadRoomModel();
         this.scene.add(room);
+
+        controlListeners(this.controls);
 
         const box = new THREE.Box3().setFromObject(room);
         const center = new THREE.Vector3();

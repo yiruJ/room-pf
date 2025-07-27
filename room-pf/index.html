@@ -8,11 +8,28 @@
   </head>
   <body>
     <div id="app"></div>
+
+    <div 
+      id="title" 
+      class="z-10 relative w-screen h-screen pointer-events-none opacity-100 
+                transition-all duration-300">
+      <p class="text-[#4B3F33] absolute text-8xl bottom-20 left-20">
+        YIRU <br> PORTFOLIO
+      </p>
+    </div>
+
+    <div class="relative">
+      <p id="labelPopup" 
+      class="text-[#4B3F33] text-6xl right-20 bottom-20 absolute z-10 
+              transition-all opacity-0 duration-700">
+      </p>
+    </div>
+
     <div 
       id="project-popup" 
       class="popup hidden bg-[#faeed0] w-1/2 h-[90vh] rounded-xl bottom-0 right-10 
              scroll-smooth transition-all duration-700 ease-out ">
-      <p id="popup-font" class="text-4xl text-center top-5 font-medium">
+      <p class="font text-8xl text-center top-5 font-medium">
         Projects
       </p>
     </div>

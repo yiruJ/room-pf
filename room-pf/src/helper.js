@@ -83,18 +83,89 @@ export function handleHoverFeedback(raycaster, mouse, camera, meshes, state) {
 
                 state.originalScale = hovered.scale.clone();
                 state.hoveredObj = hovered;
-                hovered.scale.set(1.15, 1.15, 1.15);
+                if (hovered.name.includes("sketchbook")) {
+                    if (!hovered.userData.originalPosition) {
+                        hovered.userData.originalPosition = hovered.position.clone();
+                    }
+
+                    hovered.scale.set(1.2, 1.2, 1.2);
+
+                    // Shift forward slightly along local Z axis to prevent back face from showing
+                    const forward = new THREE.Vector3(-0.6, -0.5, -0.6); // adjust the amount as needed
+                    hovered.localToWorld(forward);
+                    hovered.worldToLocal(forward);
+                    hovered.position.add(forward);
+
+                } else {
+                    hovered.scale.set(1.15, 1.15, 1.15);
+                }
                 document.body.style.cursor = 'pointer';
+                displayObjectLabel(hovered.name);
             }
         } else {
             if (state.hoveredObj) {
+                if (state.hoveredObj.name.includes('sketchbook')) {
+                    state.hoveredObj.scale.copy(state.originalScale);
+
+                    if (state.hoveredObj.userData.originalPosition) {
+                        state.hoveredObj.position.copy(state.hoveredObj.userData.originalPosition);
+                        delete state.hoveredObj.userData.originalPosition;
+                    }
+                }
                 state.hoveredObj.scale.copy(state.originalScale);
                 state.hoveredObj = null;
                 state.originalScale = null;
                 document.body.style.cursor = 'default';
+
+                const labelPopup = document.getElementById('labelPopup');
+                labelPopup.classList.remove('opacity-100');
+
+                requestAnimationFrame(() => {
+                    labelPopup.classList.add('opacity-0');
+                })
+
             }
         }
     });
+}
+
+function displayObjectLabel(name) {
+    const labelPopup = document.getElementById('labelPopup');
+
+    if (name.includes('screen')) {
+        labelPopup.textContent = "PROJECTS";
+    } else if (name.includes('github')) {
+        labelPopup.textContent = "GITHUB";
+    } else if (name.includes('instagram')) {
+        labelPopup.textContent = "INSTAGRAM";
+    } else if (name.includes('linkedIn')) {
+        labelPopup.textContent = "LINKEDIN";
+    } else if (name.includes('sketchbook')) {
+        labelPopup.textContent = "ABOUT ME";
+    }
+
+    requestAnimationFrame(() => {
+        labelPopup.classList.remove('opacity-0');
+        labelPopup.classList.add('opacity-100');
+    })
+}
+
+export function controlListeners(controls) {
+    const title = document.getElementById('title');
+
+    controls.addEventListener('start', () => {
+        requestAnimationFrame(() => {
+            title.classList.remove('opacity-100');
+            title.classList.add('opacity-0');
+        })
+    });
+
+    // controls.addEventListener('end', () => {
+    //     requestAnimationFrame(() => {
+    //         title.classList.remove('opacity-0');
+    //         title.classList.add('opacity-100');
+    //     })
+    // });
 }
 
 export function registerCLickableObjects(room) {
