@@ -36,7 +36,7 @@ export function handleObjectClick(raycaster, mouse, camera, controls, meshes, ro
                         z: room.position.z + offset.z,
                         duration: 1,
                         ease: "power2.inOut"
-                        });
+                    });
 
                     gsap.to(room.rotation, {
                         y: room.rotation.y + Math.PI / 6,
@@ -60,6 +60,30 @@ export function handleObjectClick(raycaster, mouse, camera, controls, meshes, ro
                         projectsPopup.classList.add('translate-y-0', 'opacity-100');
                     })
                 }, 300)
+            } else if (clickedObj.name.includes('sketchbook')) {
+                controls.minDistance = 0;
+                controls.maxDistance = Infinity;
+                if (!clickedObj.userData.clicked) {
+                    gsap.to(camera.position, {
+                        x: 2.75,
+                        y: 1.4,
+                        z: 3.42,
+                        duration: 1,
+                        ease: "power2.inOut",
+                        onUpdate: () => controls.update() // keeps view in sync
+                    });
+
+                    gsap.to(controls.target, {
+                        x: 3.7,
+                        y: 1.4,
+                        z: 0.1,
+                        duration: 1,
+                        ease: "power2.inOut",
+                        onUpdate: () => controls.update()
+                    });
+                }
+
+                clickedObj.userData.clicked = true;
             }
         }
     });

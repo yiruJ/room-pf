@@ -83,16 +83,21 @@ export class HomePage {
         handleObjectClick(this.raycaster, this.mouse, this.camera, this.controls, contactLinks);
 
         // monitor screens / projects
-        const screens = clickableObjects.filter((object) => object.type === "project");
-        handleObjectClick(this.raycaster, this.mouse, this.camera, this.controls, screens, room, this.pivot);
+        const screen = clickableObjects.filter((object) => object.type === "project");
+        handleObjectClick(this.raycaster, this.mouse, this.camera, this.controls, screen, room, this.pivot);
 
         // sketchbook
         const sketchbook = clickableObjects.filter((object) => object.type === "about");
+        handleObjectClick(this.raycaster, this.mouse, this.camera, this.controls, sketchbook, room, this.pivot);
+
 
         const animate = () => {
             requestAnimationFrame(animate);
             this.controls.update();
             this.renderScene();
+
+            console.log(this.camera.position);
+            console.log(this.controls.target);
         };
 
         animate();
