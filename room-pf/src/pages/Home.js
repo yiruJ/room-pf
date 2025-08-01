@@ -53,6 +53,43 @@ export class HomePage {
         box.getCenter(center);
         room.position.sub(center);
 
+        const sketchbookPlane = new THREE.PlaneGeometry(2.7, 1.7);
+        const canvas = document.createElement('canvas');
+        canvas.width = 2000;
+        canvas.height = 1000;
+
+        const ctx = canvas.getContext('2d');
+
+        // Draw background
+        ctx.fillStyle = '#faeed0';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Draw label text
+        ctx.fillStyle = '#4B3F33';
+        ctx.font = '120px Pacifico';
+        ctx.fillText('My Label', 100, 200);
+
+        // Create texture and force update
+        const sketchbookTexture = new THREE.CanvasTexture(canvas);
+        sketchbookTexture.needsUpdate = true;
+
+        const sketchbookMaterial = new THREE.MeshBasicMaterial({
+            map: sketchbookTexture,
+            transparent: true
+        });
+
+        const axesHelper = new THREE.AxesHelper(1);
+        
+        const sketchbookMesh = new THREE.Mesh(sketchbookPlane, sketchbookMaterial);
+        sketchbookMesh.position.set(4.2, 1.8, -2.3);
+        sketchbookMesh.rotation.set(-Math.PI / 8.5, -Math.PI / 4.85, -Math.PI / 7);
+        sketchbookMesh.add(axesHelper);
+        this.scene.add(axesHelper);
+        this.scene.add(sketchbookMesh);
+        const gridHelper = new THREE.GridHelper(10, 10); // size, divisions
+this.scene.add(gridHelper);
+
+
         handleRoomSize(this.renderer, room, this.camera);
         
         // lights
@@ -65,14 +102,14 @@ export class HomePage {
         room.position.set(0, -5, 0);
         
         // rotation limits
-        this.controls.maxPolarAngle = Math.PI / 1.75;
-        this.controls.minPolarAngle = Math.PI / 2;
-        this.controls.minAzimuthAngle = - Math.PI / 6;
-        this.controls.maxAzimuthAngle = Math.PI / 6;
+        // this.controls.maxPolarAngle = Math.PI / 1.75;
+        // this.controls.minPolarAngle = Math.PI / 2;
+        // this.controls.minAzimuthAngle = - Math.PI / 6;
+        // this.controls.maxAzimuthAngle = Math.PI / 6;
 
         // zoom limits
-        this.controls.maxDistance = 55;
-        this.controls.minDistance = 30;
+        // this.controls.maxDistance = 55;
+        // this.controls.minDistance = 30;
         
         // fetch clickable objects
         const clickableObjects = registerCLickableObjects(room);
@@ -90,14 +127,10 @@ export class HomePage {
         const sketchbook = clickableObjects.filter((object) => object.type === "about");
         handleObjectClick(this.raycaster, this.mouse, this.camera, this.controls, sketchbook, room, this.pivot);
 
-
         const animate = () => {
             requestAnimationFrame(animate);
             this.controls.update();
             this.renderScene();
-
-            console.log(this.camera.position);
-            console.log(this.controls.target);
         };
 
         animate();

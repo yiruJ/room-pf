@@ -51,16 +51,25 @@ export function handleObjectClick(raycaster, mouse, camera, controls, meshes, ro
 
                 // open pop-up
                 const projectsPopup = document.getElementById('project-popup');
+                const projectsPopupShadow = document.getElementById('project-popup-shadow');
+
+                projectsPopupShadow.classList.remove('hidden');
+                projectsPopupShadow.classList.add('translate-y-full', 'opacity-0');
+                
                 projectsPopup.classList.remove('hidden');
                 projectsPopup.classList.add('translate-y-full', 'opacity-0');
                 
                 setTimeout(() => {
                     requestAnimationFrame(() => {
+                        projectsPopupShadow.style.transform = 'translateY(4%)';
+                        projectsPopupShadow.classList.add('translate-y-0', 'opacity-100');
+
                         projectsPopup.classList.remove('translate-y-full', 'opacity-0');
                         projectsPopup.classList.add('translate-y-0', 'opacity-100');
                     })
                 }, 300)
             } else if (clickedObj.name.includes('sketchbook')) {
+                console.log(worldPos);
                 controls.minDistance = 0;
                 controls.maxDistance = Infinity;
                 if (!clickedObj.userData.clicked) {
