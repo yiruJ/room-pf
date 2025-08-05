@@ -70,7 +70,6 @@ export function handleObjectClick(raycaster, mouse, camera, controls, meshes, ro
                 }, 300)
             } else if (clickedObj.name.includes('sketchbook')) {
                 controls.minDistance = 0;
-                controls.maxDistance = Infinity;
                 if (!clickedObj.userData.clicked) {
                     gsap.to(camera.position, {
                         x: 2.75,
@@ -93,6 +92,7 @@ export function handleObjectClick(raycaster, mouse, camera, controls, meshes, ro
 
                 clickedObj.userData.clicked = true;
 
+                // Create plane for 'About Me' paragraph
                 const sketchbookPlane = new THREE.PlaneGeometry(2.7, 1.7);
                 const canvas = document.createElement('canvas');
                 canvas.width = 2000;
@@ -103,7 +103,14 @@ export function handleObjectClick(raycaster, mouse, camera, controls, meshes, ro
                 // Draw label text
                 ctx.fillStyle = '#4B3F33';
                 ctx.font = '120px Pacifico';
-                ctx.fillText('About Me', 100, 200);
+
+                const lines = [
+                    { text: 'About Me', font: '120px Pacifico', x: 800, y: 200, opacity: 0},
+                    { text: 'Hi, I am Yiru, UNSW Computer Science ', font: '100px Pacifico', x: 200, y: 350, opacity: 0},
+                    { text: 'student passionate about design, coding ', font: '100px Pacifico', x: 200, y: 500, opacity: 0},
+                    { text: 'and AR - eager to apply creative and ', font: '100px Pacifico', x: 200, y: 650, opacity: 0},
+                    { text: 'technical skills in real-world projects:)', font: '100px Pacifico', x: 200, y: 800, opacity: 0}
+                ]
         
                 // Create texture and force update
                 const sketchbookTexture = new THREE.CanvasTexture(canvas);
@@ -118,6 +125,34 @@ export function handleObjectClick(raycaster, mouse, camera, controls, meshes, ro
                 sketchbookMesh.position.set(4.2, 1.8, -2.3);
                 sketchbookMesh.rotation.set(-Math.PI / 8.5, -Math.PI / 4.85, -Math.PI / 7);
                 scene.add(sketchbookMesh);
+
+                // asynchronously change the opacity of the line over time
+                lines.forEach((line, i) => {
+                    gsap.to(line, {
+                        opacity: 1, 
+                        duration: 1, 
+                        delay: i * 0.8
+                    });
+                });
+
+                function draw() {
+                    // clear canvas before drawing
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                    for (const line of lines) {
+                        ctx.font = line.font;
+                        ctx.globalAlpha = line.opacity;
+                        ctx.fillText(line.text, line.x, line.y);
+                    }
+
+                    ctx.globalAlpha = 1;
+
+                    sketchbookTexture.needsUpdate = true;
+                    
+                    requestAnimationFrame(draw);
+                }
+
+                draw();
                 
             }
         }
@@ -218,13 +253,6 @@ export function controlListeners(controls) {
             title.classList.add('opacity-0');
         })
     });
-
-    // controls.addEventListener('end', () => {
-    //     requestAnimationFrame(() => {
-    //         title.classList.remove('opacity-0');
-    //         title.classList.add('opacity-100');
-    //     })
-    // });
 }
 
 export function registerCLickableObjects(room) {
