@@ -12,7 +12,7 @@ function configureRaycaster(event, raycaster, mouse, camera, meshes) {
     return raycaster.intersectObjects(meshObjects, true);
 }
 
-export function handleObjectClick(raycaster, mouse, camera, controls, meshes, room) {
+export function handleObjectClick(raycaster, mouse, camera, controls, meshes, room, scene) {
     window.addEventListener('click', (event) => {
         const intersects = configureRaycaster(event, raycaster, mouse, camera, meshes);
         
@@ -69,7 +69,6 @@ export function handleObjectClick(raycaster, mouse, camera, controls, meshes, ro
                     })
                 }, 300)
             } else if (clickedObj.name.includes('sketchbook')) {
-                console.log(worldPos);
                 controls.minDistance = 0;
                 controls.maxDistance = Infinity;
                 if (!clickedObj.userData.clicked) {
@@ -93,6 +92,33 @@ export function handleObjectClick(raycaster, mouse, camera, controls, meshes, ro
                 }
 
                 clickedObj.userData.clicked = true;
+
+                const sketchbookPlane = new THREE.PlaneGeometry(2.7, 1.7);
+                const canvas = document.createElement('canvas');
+                canvas.width = 2000;
+                canvas.height = 1000;
+        
+                const ctx = canvas.getContext('2d');
+        
+                // Draw label text
+                ctx.fillStyle = '#4B3F33';
+                ctx.font = '120px Pacifico';
+                ctx.fillText('About Me', 100, 200);
+        
+                // Create texture and force update
+                const sketchbookTexture = new THREE.CanvasTexture(canvas);
+                sketchbookTexture.needsUpdate = true;
+        
+                const sketchbookMaterial = new THREE.MeshBasicMaterial({
+                    map: sketchbookTexture,
+                    transparent: true
+                });
+        
+                const sketchbookMesh = new THREE.Mesh(sketchbookPlane, sketchbookMaterial);
+                sketchbookMesh.position.set(4.2, 1.8, -2.3);
+                sketchbookMesh.rotation.set(-Math.PI / 8.5, -Math.PI / 4.85, -Math.PI / 7);
+                scene.add(sketchbookMesh);
+                
             }
         }
     });
