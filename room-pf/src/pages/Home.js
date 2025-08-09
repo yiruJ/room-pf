@@ -73,6 +73,14 @@ export class HomePage {
         // zoom limits
         this.controls.maxDistance = 55;
         this.controls.minDistance = 30;
+
+        // store original values for back button
+        const originals = {
+            cameraPos: this.camera.position.toArray(),
+            target: this.controls.target.toArray(),
+            roomPos: room.position.toArray(),
+            roomRot: [room.rotation.x, room.rotation.y, room.rotation.z]
+        }
         
         // fetch clickable objects
         const clickableObjects = registerCLickableObjects(room);
@@ -80,15 +88,15 @@ export class HomePage {
         
         // contact links
         const contactLinks = clickableObjects.filter((object) => object.type === "contact");
-        handleObjectClick(this.raycaster, this.mouse, this.camera, this.controls, contactLinks, this.scene);
+        handleObjectClick(this.raycaster, this.mouse, this.camera, this.controls, contactLinks, this.scene, originals);
 
         // monitor screens / projects
         const screen = clickableObjects.filter((object) => object.type === "project");
-        handleObjectClick(this.raycaster, this.mouse, this.camera, this.controls, screen, room, this.scene);
+        handleObjectClick(this.raycaster, this.mouse, this.camera, this.controls, screen, room, this.scene, originals);
 
         // sketchbook
         const sketchbook = clickableObjects.filter((object) => object.type === "about");
-        handleObjectClick(this.raycaster, this.mouse, this.camera, this.controls, sketchbook, room, this.scene);
+        handleObjectClick(this.raycaster, this.mouse, this.camera, this.controls, sketchbook, room, this.scene, originals);
 
         const animate = () => {
             requestAnimationFrame(animate);

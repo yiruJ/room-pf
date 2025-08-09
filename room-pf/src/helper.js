@@ -1,5 +1,9 @@
 import gsap from 'gsap';
 import * as THREE from 'three';
+import {
+    showBackButton,
+    handleBackButton
+} from "./components/backButton";
 
 function configureRaycaster(event, raycaster, mouse, camera, meshes) {
     // Convert mouse cord from pixel --> NDC for raycaster
@@ -12,13 +16,11 @@ function configureRaycaster(event, raycaster, mouse, camera, meshes) {
     return raycaster.intersectObjects(meshObjects, true);
 }
 
-export function handleObjectClick(raycaster, mouse, camera, controls, meshes, room, scene) {
+export function handleObjectClick(raycaster, mouse, camera, controls, meshes, room, scene, originals) {
     window.addEventListener('click', (event) => {
         const intersects = configureRaycaster(event, raycaster, mouse, camera, meshes);
-        
         // check if any object was hit
         if (intersects.length > 0) {
-
             // only execute function of nearest object
             const clickedObj = intersects[0].object;
             // if the object is a contact link
@@ -26,6 +28,7 @@ export function handleObjectClick(raycaster, mouse, camera, controls, meshes, ro
                 const url = clickedObj.userData.url;
                 window.open(url, '_blank');
             } else if (clickedObj.name.includes("screen")) {
+                showBackButton();
                 if (!clickedObj.userData.clicked) {
                     const moveDistance = window.innerWidth < 768 ? 5 : 18;
                     const offset = new THREE.Vector3(-1, 0, -0.5).normalize().multiplyScalar(moveDistance);
@@ -68,7 +71,10 @@ export function handleObjectClick(raycaster, mouse, camera, controls, meshes, ro
                         projectsPopup.classList.add('translate-y-0', 'opacity-100');
                     })
                 }, 300)
+
+                handleBackButton('screen', camera, controls, room, clickedObj, originals);
             } else if (clickedObj.name.includes('sketchbook')) {
+                showBackButton();
                 controls.minDistance = 0;
                 if (!clickedObj.userData.clicked) {
                     gsap.to(camera.position, {
@@ -93,8 +99,9 @@ export function handleObjectClick(raycaster, mouse, camera, controls, meshes, ro
                 clickedObj.userData.clicked = true;
 
                 // Create plane for 'About Me' paragraph
-                const sketchbookPlane = new THREE.PlaneGeometry(2.7, 1.7);
+                const sketchbookGeometry = new THREE.PlaneGeometry(2.7, 1.7);
                 const canvas = document.createElement('canvas');
+                canvas.id = 'sketchbook';
                 canvas.width = 2000;
                 canvas.height = 1000;
         
@@ -121,7 +128,7 @@ export function handleObjectClick(raycaster, mouse, camera, controls, meshes, ro
                     transparent: true
                 });
         
-                const sketchbookMesh = new THREE.Mesh(sketchbookPlane, sketchbookMaterial);
+                const sketchbookMesh = new THREE.Mesh(sketchbookGeometry, sketchbookMaterial);
                 sketchbookMesh.position.set(4.2, 1.8, -2.3);
                 sketchbookMesh.rotation.set(-Math.PI / 8.5, -Math.PI / 4.85, -Math.PI / 7);
                 scene.add(sketchbookMesh);
@@ -153,7 +160,16 @@ export function handleObjectClick(raycaster, mouse, camera, controls, meshes, ro
                 }
 
                 draw();
-                
+
+                const sketchbookProperties = {
+                    sketchbookMesh, 
+                    sketchbookGeometry, 
+                    sketchbookTexture,
+                    sketchbookMaterial,
+                    scene
+                }
+
+                handleBackButton('sketchbook', camera, controls, room, clickedObj, originals, sketchbookProperties);   
             }
         }
     });
@@ -217,7 +233,6 @@ export function handleHoverFeedback(raycaster, mouse, camera, meshes, state) {
                 requestAnimationFrame(() => {
                     labelPopup.classList.add('opacity-0');
                 })
-
             }
         }
     });
