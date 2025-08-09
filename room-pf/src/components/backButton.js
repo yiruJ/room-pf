@@ -1,22 +1,20 @@
 import gsap from 'gsap';
+import {
+    hideProjects
+} from "./monitor";
 
 // section can be either 'sketchbook' or 'screens'
 export function handleBackButton(section, camera, controls, room, clickedObj, originals, sketchbookProperties) {
-    controls.enableRotate = true;
-    clickedObj.userData.clicked = false;
     const onUpdate = () => controls?.update?.();
 
     const backButton = document.getElementById('back-button');
+
     backButton.addEventListener('click', () => {
+        controls.enableRotate = true;
+        
         if (section === "sketchbook") {
-            const {sketchbookMesh, sketchbookGeometry, sketchbookTexture, sketchbookMaterial, scene } = sketchbookProperties;
-
-            // remove sketchbook texture
-            scene.remove(sketchbookMesh);
-            sketchbookGeometry.dispose();
-            sketchbookMaterial.dispose();
-            sketchbookTexture.dispose();
-
+            clearSketchbook(sketchbookProperties);
+            
             // reset targets
             gsap.to(controls.target, {
                 x: originals.target[0],
@@ -29,25 +27,7 @@ export function handleBackButton(section, camera, controls, room, clickedObj, or
 
             handleBackAnimation(camera, room, originals, onUpdate);
         } else {
-            const projectsPopup = document.getElementById('project-popup');
-            const projectsPopupShadow = document.getElementById('project-popup-shadow');
-
-            projectsPopupShadow.classList.add('hidden');
-            projectsPopupShadow.classList.remove('translate-y-full', 'opacity-0');
-            
-            projectsPopup.classList.add('hidden');
-            projectsPopup.classList.remove('translate-y-full', 'opacity-0');
-            
-            setTimeout(() => {
-                requestAnimationFrame(() => {
-                    projectsPopupShadow.style.transform = 'translateY(4%)';
-                    projectsPopupShadow.classList.remove('translate-y-0', 'opacity-100');
-
-                    projectsPopup.classList.add('translate-y-full', 'opacity-0');
-                    projectsPopup.classList.remove('translate-y-0', 'opacity-100');
-                })
-            }, 300)
-
+            hideProjects();
             handleBackAnimation(camera, room, originals, onUpdate);
         }
 
@@ -55,6 +35,10 @@ export function handleBackButton(section, camera, controls, room, clickedObj, or
             backButton.classList.remove("opacity-100");
             backButton.classList.add("opacity-0");
         });
+        
+        setTimeout(() => {
+            clickedObj.userData.clicked = false;
+        }, 300);
     })
 }
 
@@ -94,4 +78,14 @@ function handleBackAnimation(camera, room, originals) {
         duration: 1.5,
         ease: "power2.out"
     });
+}
+
+function clearSketchbook(sketchbookProperties) {
+    const {sketchbookMesh, sketchbookGeometry, sketchbookTexture, sketchbookMaterial, scene } = sketchbookProperties;
+
+    // remove sketchbook texture
+    scene.remove(sketchbookMesh);
+    sketchbookGeometry.dispose();
+    sketchbookMaterial.dispose();
+    sketchbookTexture.dispose();
 }

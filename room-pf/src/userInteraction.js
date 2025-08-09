@@ -5,6 +5,15 @@ import {
     handleBackButton
 } from "./components/backButton";
 
+import {
+    createSketchbookPlane
+} from "./components/sketchbook";
+
+import {
+    displayProjects
+} from "./components/monitor";
+
+
 function configureRaycaster(event, raycaster, mouse, camera, meshes) {
     // Convert mouse cord from pixel --> NDC for raycaster
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
@@ -27,50 +36,35 @@ export function handleObjectClick(raycaster, mouse, camera, controls, meshes, ro
             if (clickedObj.userData.url) {
                 const url = clickedObj.userData.url;
                 window.open(url, '_blank');
-            } else if (clickedObj.name.includes("screen")) {
+            } else if (clickedObj.name.includes("screen") && !clickedObj.userData.clicked) {
                 showBackButton();
+                controls.minDistance = 0;
+
                 if (!clickedObj.userData.clicked) {
-                    const moveDistance = window.innerWidth < 768 ? 5 : 18;
-                    const offset = new THREE.Vector3(-1, 0, -0.5).normalize().multiplyScalar(moveDistance);
-
-                    gsap.to(room.position, {
-                        x: room.position.x + offset.x,
-                        y: room.position.y + offset.y,
-                        z: room.position.z + offset.z,
+                    gsap.to(camera.position, {
+                        x: -0.6,
+                        y: 0,
+                        z: 8.9,
                         duration: 1,
-                        ease: "power2.inOut"
+                        ease: "power2.inOut",
+                        onUpdate: () => controls.update() // keeps view in sync
                     });
 
-                    gsap.to(room.rotation, {
-                        y: room.rotation.y + Math.PI / 6,
+                    gsap.to(controls.target, {
+                        x: 0,
+                        y: 0,
+                        z: 0,
                         duration: 1,
-                        ease: "power2.inOut"
+                        ease: "power2.inOut",
+                        onUpdate: () => controls.update()
                     });
-
-                    controls.enableRotate = false;
                 }
                 
+                controls.enableRotate = false;
+                
                 clickedObj.userData.clicked = true;
-
-                // open pop-up
-                const projectsPopup = document.getElementById('project-popup');
-                const projectsPopupShadow = document.getElementById('project-popup-shadow');
-
-                projectsPopupShadow.classList.remove('hidden');
-                projectsPopupShadow.classList.add('translate-y-full', 'opacity-0');
                 
-                projectsPopup.classList.remove('hidden');
-                projectsPopup.classList.add('translate-y-full', 'opacity-0');
-                
-                setTimeout(() => {
-                    requestAnimationFrame(() => {
-                        projectsPopupShadow.style.transform = 'translateY(4%)';
-                        projectsPopupShadow.classList.add('translate-y-0', 'opacity-100');
-
-                        projectsPopup.classList.remove('translate-y-full', 'opacity-0');
-                        projectsPopup.classList.add('translate-y-0', 'opacity-100');
-                    })
-                }, 300)
+                displayProjects();
 
                 handleBackButton('screen', camera, controls, room, clickedObj, originals);
             } else if (clickedObj.name.includes('sketchbook')) {
@@ -98,76 +92,15 @@ export function handleObjectClick(raycaster, mouse, camera, controls, meshes, ro
 
                 clickedObj.userData.clicked = true;
 
-                // Create plane for 'About Me' paragraph
-                const sketchbookGeometry = new THREE.PlaneGeometry(2.7, 1.7);
-                const canvas = document.createElement('canvas');
-                canvas.id = 'sketchbook';
-                canvas.width = 2000;
-                canvas.height = 1000;
-        
-                const ctx = canvas.getContext('2d');
-        
-                // Draw label text
-                ctx.fillStyle = '#4B3F33';
-                ctx.font = '120px Pacifico';
-
-                const lines = [
-                    { text: 'About Me', font: '120px Pacifico', x: 800, y: 200, opacity: 0},
-                    { text: 'Hi, I am Yiru, UNSW Computer Science ', font: '100px Pacifico', x: 200, y: 350, opacity: 0},
-                    { text: 'student passionate about design, coding ', font: '100px Pacifico', x: 200, y: 500, opacity: 0},
-                    { text: 'and AR - eager to apply creative and ', font: '100px Pacifico', x: 200, y: 650, opacity: 0},
-                    { text: 'technical skills in real-world projects:)', font: '100px Pacifico', x: 200, y: 800, opacity: 0}
-                ]
-        
-                // Create texture and force update
-                const sketchbookTexture = new THREE.CanvasTexture(canvas);
-                sketchbookTexture.needsUpdate = true;
-        
-                const sketchbookMaterial = new THREE.MeshBasicMaterial({
-                    map: sketchbookTexture,
-                    transparent: true
-                });
-        
-                const sketchbookMesh = new THREE.Mesh(sketchbookGeometry, sketchbookMaterial);
-                sketchbookMesh.position.set(4.2, 1.8, -2.3);
-                sketchbookMesh.rotation.set(-Math.PI / 8.5, -Math.PI / 4.85, -Math.PI / 7);
-                scene.add(sketchbookMesh);
-
-                // asynchronously change the opacity of the line over time
-                lines.forEach((line, i) => {
-                    gsap.to(line, {
-                        opacity: 1, 
-                        duration: 1, 
-                        delay: i * 0.8
-                    });
-                });
-
-                function draw() {
-                    // clear canvas before drawing
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-                    for (const line of lines) {
-                        ctx.font = line.font;
-                        ctx.globalAlpha = line.opacity;
-                        ctx.fillText(line.text, line.x, line.y);
-                    }
-
-                    ctx.globalAlpha = 1;
-
-                    sketchbookTexture.needsUpdate = true;
-                    
-                    requestAnimationFrame(draw);
-                }
-
-                draw();
+                const {sketchbookMesh, sketchbookGeometry, sketchbookTexture, sketchbookMaterial} = createSketchbookPlane(scene);
 
                 const sketchbookProperties = {
                     sketchbookMesh, 
                     sketchbookGeometry, 
-                    sketchbookTexture,
-                    sketchbookMaterial,
+                    sketchbookTexture, 
+                    sketchbookMaterial,    
                     scene
-                }
+                };
 
                 handleBackButton('sketchbook', camera, controls, room, clickedObj, originals, sketchbookProperties);   
             }

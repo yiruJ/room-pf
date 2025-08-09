@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { loadRoomModel } from '../components/room.js';
+import { loadRoomModel, configureRoom } from '../components/room.js';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 
 import {
@@ -8,7 +8,7 @@ import {
     registerCLickableObjects,
     handleRoomSize,
     controlListeners
-} from '../helper.js'
+} from '../userInteraction.js'
 
 export class HomePage {
     constructor() {
@@ -55,24 +55,7 @@ export class HomePage {
 
         handleRoomSize(this.renderer, room, this.camera);
         
-        // lights
-        const light = new THREE.DirectionalLight(0xFFFFFF, 3);
-        light.position.set(-1, 2, 4);
-        this.scene.add(light);
-
-        // configure room
-        room.rotation.set(0.3, 0.8, 0);
-        room.position.set(0, -5, 0);
-        
-        // rotation limits
-        this.controls.maxPolarAngle = Math.PI / 1.75;
-        this.controls.minPolarAngle = Math.PI / 2;
-        this.controls.minAzimuthAngle = - Math.PI / 6;
-        this.controls.maxAzimuthAngle = Math.PI / 6;
-
-        // zoom limits
-        this.controls.maxDistance = 55;
-        this.controls.minDistance = 30;
+        configureRoom(this.scene, this.controls, room);
 
         // store original values for back button
         const originals = {

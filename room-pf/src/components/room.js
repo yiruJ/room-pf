@@ -2,6 +2,7 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 import { TextureLoader } from 'three';
 import { MeshBasicMaterial } from 'three';
+import * as THREE from 'three';
 
 const textureLoader = new TextureLoader();
 
@@ -53,4 +54,26 @@ export function loadRoomModel() {
             (error) => reject(error)
         );
     });
+}
+
+export function configureRoom(scene, controls, room) {
+    // lights
+    const light = new THREE.DirectionalLight(0xFFFFFF, 3);
+    light.position.set(-1, 2, 4);
+    scene.add(light);
+
+    // configure room
+    room.rotation.set(0.3, 0.8, 0);
+    room.position.set(0, -5, 0);
+    
+    // rotation limits
+    controls.maxPolarAngle = Math.PI / 1.75;
+    controls.minPolarAngle = Math.PI / 2;
+    controls.minAzimuthAngle = - Math.PI / 6;
+    controls.maxAzimuthAngle = Math.PI / 6;
+
+    // zoom limits
+    controls.maxDistance = 55;
+    controls.minDistance = 30;
+
 }
