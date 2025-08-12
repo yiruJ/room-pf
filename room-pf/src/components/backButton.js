@@ -3,38 +3,42 @@ import {
     hideProjects
 } from "./monitor";
 
+import { showTitle } from "../helper";
+
 // section can be either 'sketchbook' or 'screens'
-export function handleBackButton(section, camera, controls, room, clickedObj, originals, sketchbookProperties) {
-    const onUpdate = () => controls?.update?.();
+export function handleBackButton(section, ctx, clickedObj, sketchbookProperties) {
+    const onUpdate = () => ctx.controls?.update?.();
 
     const backButton = document.getElementById('back-button');
 
     backButton.addEventListener('click', () => {
-        controls.enableRotate = true;
+        ctx.controls.enableRotate = true;
         
         if (section === "sketchbook") {
-            clearSketchbook(sketchbookProperties);
+            clearSketchbook(sketchbookProperties, ctx.scene);
             
             // reset targets
-            gsap.to(controls.target, {
-                x: originals.target[0],
-                y: originals.target[1],
-                z: originals.target[2],
+            gsap.to(ctx.controls.target, {
+                x: ctx.originals.target[0],
+                y: ctx.originals.target[1],
+                z: ctx.originals.target[2],
                 duration: 1.5,
                 ease: 'power2.out',
                 onUpdate
             });
 
-            handleBackAnimation(camera, room, originals, onUpdate);
+            handleBackAnimation(ctx, onUpdate);
         } else {
             hideProjects();
-            handleBackAnimation(camera, room, originals, onUpdate);
+            handleBackAnimation(ctx, onUpdate);
         }
 
         requestAnimationFrame(() => {
             backButton.classList.remove("opacity-100");
             backButton.classList.add("opacity-0");
         });
+        
+        ctx.controls.minDistance = 30;
         
         setTimeout(() => {
             clickedObj.userData.clicked = false;
@@ -52,36 +56,39 @@ export function showBackButton() {
     }, 800)
 }
 
-function handleBackAnimation(camera, room, originals) {
-    const { cameraPos, target, roomPos, roomRot } = originals;
+function handleBackAnimation(ctx, onUpdate) {
+    const { cameraPos, target, roomPos, roomRot } = ctx.originals;
 
-    gsap.to(camera.position, {
+    gsap.to(ctx.camera.position, {
         x: cameraPos[0],
         y: cameraPos[1],
         z: cameraPos[2],
         duration: 1.5, // seconds
-        ease: "power2.out"
+        ease: "power2.out",
+        onUpdate
     });
 
-    gsap.to(room.position, {
+    gsap.to(ctx.room.position, {
         x: roomPos[0],
         y: roomPos[1],
         z: roomPos[2],
         duration: 1.5,
-        ease: "power2.out"
+        ease: "power2.out",
+        onUpdate
     });
 
-    gsap.to(room.rotation, {
+    gsap.to(ctx.room.rotation, {
         x: roomRot[0],
         y: roomRot[1],
         z: roomRot[2],
         duration: 1.5,
-        ease: "power2.out"
+        ease: "power2.out",
+        onUpdate
     });
 }
 
-function clearSketchbook(sketchbookProperties) {
-    const {sketchbookMesh, sketchbookGeometry, sketchbookTexture, sketchbookMaterial, scene } = sketchbookProperties;
+function clearSketchbook(sketchbookProperties, scene) {
+    const {sketchbookMesh, sketchbookGeometry, sketchbookTexture, sketchbookMaterial } = sketchbookProperties;
 
     // remove sketchbook texture
     scene.remove(sketchbookMesh);

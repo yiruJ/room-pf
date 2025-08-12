@@ -1,14 +1,19 @@
 import * as THREE from 'three';
+import gsap from 'gsap';
+
 import { loadRoomModel, configureRoom } from '../components/room.js';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
-
 import {
-    handleHoverFeedback,
-    handleObjectClick,
+    configureRaycaster,
+    displayObjectLabel,
     registerCLickableObjects,
-    handleRoomSize,
-    controlListeners
-} from '../userInteraction.js'
+    controlListeners,
+    handleRoomSize
+} from '../helper.js'
+import { handleHoverFeedback } from '../interactions/handleFeedback.js';
+import { handleObjectClick } from '../interactions/handleClick.js';
+import { handleBackButton, showBackButton } from '../components/backButton.js';
+import { createSketchbookPlane } from '../components/sketchbook.js';
 
 export class HomePage {
     constructor() {
@@ -65,21 +70,38 @@ export class HomePage {
             roomRot: [room.rotation.x, room.rotation.y, room.rotation.z]
         }
         
-        // fetch clickable objects
-        const clickableObjects = registerCLickableObjects(room);
-        handleHoverFeedback(this.raycaster, this.mouse, this.camera, clickableObjects, this.hoverState);
-        
-        // contact links
-        const contactLinks = clickableObjects.filter((object) => object.type === "contact");
-        handleObjectClick(this.raycaster, this.mouse, this.camera, this.controls, contactLinks, this.scene, originals);
+        // store actions for user interactions
+        const actions = {
+            openUrl(url) {
+                window.open(url, '_blank');
+            },
+            zoomTo(camera, controls, targetPos, targetLook) {
+                gsap.to(camera.position, { ...targetPos, duration: 1, ease: "power2.inOut", onUpdate: () => controls.update() });
+                gsap.to(controls.target,  { ...targetLook, duration: 1, ease: "power2.inOut", onUpdate: () => controls.update() });
+            }
+        };
 
-        // monitor screens / projects
-        const screen = clickableObjects.filter((object) => object.type === "project");
-        handleObjectClick(this.raycaster, this.mouse, this.camera, this.controls, screen, room, this.scene, originals);
+        const ctx = {
+            room,
+            scene : this.scene, 
+            camera: this.camera,
+            controls: this.controls,
+            hoverState: this.hoverState,
+            originals,
+            raycaster: this.raycaster,
+            mouse: this.mouse,
+            configureRaycaster,
+            displayObjectLabel,
+            handleBackButton,
+            createSketchbookPlane,
+            showBackButton,
+            actions
+        }
 
-        // sketchbook
-        const sketchbook = clickableObjects.filter((object) => object.type === "about");
-        handleObjectClick(this.raycaster, this.mouse, this.camera, this.controls, sketchbook, room, this.scene, originals);
+        const interactables = registerCLickableObjects(room);
+
+        handleHoverFeedback(ctx, interactables, actions);
+        handleObjectClick(ctx, interactables, actions);
 
         const animate = () => {
             requestAnimationFrame(animate);
@@ -89,5 +111,4 @@ export class HomePage {
 
         animate();
     }
-
 }

@@ -57,11 +57,13 @@ function loadProjects() {
     <article class="rounded-2xl bg-white/70 backdrop-blur-sm shadow-md hover:shadow-xl
                     transition p-4 md:p-5">
       <div class="flex gap-4">
-        <img
-          src="${p.image || 'images/placeholder.png'}"
-          alt="${p.name}"
-          class="w-24 h-24 md:w-28 md:h-28 object-cover rounded-xl border border-black/5"
-        />
+        <div class="aspect-square md:aspect-[16/9] w-24 md:w-64 overflow-hidden rounded-xl border border-black/5">
+          <img
+            src="${p.image || 'images/placeholder.png'}"
+            alt="${p.name}"
+            class="w-full h-full object-cover"
+          />
+        </div>
         <div class="flex-1">
           <h3 class="text-2xl md:text-3xl font-semibold text-[#4B3F33] leading-tight">
             ${p.name}
