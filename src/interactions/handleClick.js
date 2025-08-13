@@ -4,7 +4,7 @@ import {
 } from "./strategies/index";
 
 export function handleObjectClick(ctx, interactables) {
-    window.addEventListener('click', (e) => {
+    window.addEventListener('pointerdown', (e) => {
         const hits = ctx.configureRaycaster(e, ctx.raycaster, ctx.mouse, ctx.camera, interactables);
         if (hits.length === 0) return;
 
