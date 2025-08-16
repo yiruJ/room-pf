@@ -14,7 +14,7 @@ import { handleHoverFeedback } from '../interactions/handleFeedback.js';
 import { handleObjectClick } from '../interactions/handleClick.js';
 import { handleBackButton, showBackButton } from '../components/backButton.js';
 import { createSketchbookPlane } from '../components/sketchbook.js';
-import { indicateUserClick, initTitleTrans } from '../helper.js';
+import { indicateUserClick } from '../helper.js';
 
 export class HomePage {
     constructor() {
@@ -41,6 +41,8 @@ export class HomePage {
         }
         
         document.body.appendChild( this.renderer.domElement );
+
+        this.hasAnimated = false;
     }
 
     renderScene() {
@@ -51,9 +53,9 @@ export class HomePage {
         // load model
         const room = await loadRoomModel();
         this.scene.add(room);
-
+        
         indicateUserClick();
-        controlListeners(this.controls);
+        controlListeners(this.controls, room);
         
         const box = new THREE.Box3().setFromObject(room);
         const center = new THREE.Vector3();

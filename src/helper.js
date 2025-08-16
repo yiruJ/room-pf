@@ -1,3 +1,5 @@
+import gsap from "gsap";
+
 export function configureRaycaster(event, raycaster, mouse, camera, interactables) {
     // Convert mouse cord from pixel --> NDC for raycaster
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
@@ -53,7 +55,7 @@ function hideOverlay(overlay) {
 
 function showOverlay(overlay) {
     requestAnimationFrame(() => {
-        overlay.classList.add('opacity-100');
+        overlay.classList.add('opacity-60');
         overlay.classList.remove('opacity-0');
     })
 }
@@ -62,23 +64,48 @@ export function indicateUserClick() {
     setTimeout(() => {
         const overlay = document.getElementById('indicateUserClick');
         showOverlay(overlay);
-        initTitleTrans();
     }, 2000);
 }
 
-export function controlListeners(controls) {
+export function controlListeners(controls, room) {
     const title = document.getElementById('titleText');
     const overlay = document.getElementById('userPrompt');
 
-    controls.addEventListener('start', () => {hideTitle(title); hideOverlay(overlay);});
-    controls.addEventListener('end', () => {showTitle(title);});
+    let initialAnimation = false;
+    let skipFirstEnd = false;
+
+    controls.addEventListener('start', () => {
+        if (!initialAnimation) {
+            initialAnimation = true;
+            // animate opacity in
+            gsap.to(room.children.map(c => c.material), {
+                opacity: 1,
+                duration: 2,
+                ease: "power2.out",
+                stagger: 0.1 // optional
+            });
+
+            initTitleTrans(title);
+            hideOverlay(overlay); 
+        } else {
+            hideTitle(title);
+        }
+    });
+    
+    controls.addEventListener('end', () => {
+        if (skipFirstEnd) {
+            showTitle(title);
+        }
+
+        skipFirstEnd = true;
+    });
 }
 
-export function initTitleTrans() {
-    const title = document.getElementById('titleText');
-
-    title.classList.remove('opacity-0', '-translate-y-6');
-    title.classList.add('opacity-100', 'translate-y-0');
+function initTitleTrans(title) {
+    requestAnimationFrame(() => {
+        title.classList.add('opacity-100', 'translate-y-0');
+        title.classList.remove('opacity-0', '-translate-y-40');
+    })
 }
 
 export function registerCLickableObjects(room) {

@@ -45,9 +45,12 @@ export function loadRoomModel() {
                             // room caps
                             child.material = new MeshBasicMaterial({ map: textures.textureFive});
                         }
+
+                        // originally transparent
+                        child.material.transparent = true;
+                        child.material.opacity = 0;
                     }
                 })
-
                 resolve(model);
             },
             undefined,
