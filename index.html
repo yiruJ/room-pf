@@ -23,16 +23,40 @@
 
     <div 
       id="title" 
-      class="z-10 relative w-screen h-screen pointer-events-none opacity-100 
-                transition-all duration-300">
-      <p class="text-[#4B3F33] absolute text-8xl bottom-20 left-20">
+      class="z-10 fixed w-screen h-screen pointer-events-none">
+      <p id="titleText" class="text-[#4B3F33] absolute text-8xl bottom-20 left-20 opacity-0
+               -translate-y-6 transition-all duration-700 will-change-transform 
+               ease-out">
         YIRU <br> PORTFOLIO
       </p>
     </div>
 
+    <div
+      id="userPrompt" 
+      class="z-10 fixed w-screen h-screen pointer-events-none opacity-100 
+                transition-all duration-700"
+    >
+      <!-- overlay -->
+      <div id="overlay" class="absolute inset-0 bg-[#faeed0]">
+        <!-- col -->
+        <div class="absolute inset-0 flex flex-col items-center gap-6 justify-center">
+          <!-- row -->
+          <div class="flex flex-row items-center gap-3 justify-center">
+            <img src="images/tap.png" alt="click" class="w-10 h-10 animate-pulse">
+            <p class="text-[#4B3F33] top-10 text-2xl">
+              CLICK ON OBJECTS TO KNOW MORE ABOUT ME
+            </p>
+          </div>
+          <p id="indicateUserClick" class="text-[#4B3F33] top-10 text-xl opacity-0 transition-opacity underline opacity-60">
+            click anywhere
+          </p>
+        </div>
+      </div>
+    </div>
+
     <div class="relative">
       <p id="labelPopup" 
-      class="text-[#4B3F33] text-6xl right-20 bottom-20 absolute z-10 
+      class="text-[#4B3F33] text-6xl right-20 bottom-20 fixed z-10 
               transition-all opacity-0 duration-700">
       </p>
     </div>

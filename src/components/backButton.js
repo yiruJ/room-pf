@@ -3,8 +3,6 @@ import {
     hideProjects
 } from "./monitor";
 
-import { showTitle } from "../helper";
-
 // section can be either 'sketchbook' or 'screens'
 export function handleBackButton(section, ctx, clickedObj, sketchbookProperties) {
     const onUpdate = () => ctx.controls?.update?.();

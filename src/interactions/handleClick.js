@@ -22,10 +22,7 @@ export function handleObjectClick(ctx, interactables) {
             ctx.showBackButton();
         }
 
+        // hideHotspots();
         strat.onClick(ctx, obj);
     })
-}
-
-function hideTitle() {
-
 }

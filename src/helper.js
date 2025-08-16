@@ -30,25 +30,55 @@ export function displayObjectLabel(name) {
     })
 }
 
-export function hideTitle(title) {
+function hideTitle(title) {
     requestAnimationFrame(() => {
         title.classList.remove('opacity-100');
         title.classList.add('opacity-0');
     })
 }
 
-export function showTitle(title) {
+function showTitle(title) {
     requestAnimationFrame(() => {
         title.classList.remove('opacity-0');
         title.classList.add('opacity-100');
     })
 }
 
-export function controlListeners(controls) {
-    const title = document.getElementById('title');
+function hideOverlay(overlay) {
+    requestAnimationFrame(() => {
+        overlay.classList.remove('opacity-100');
+        overlay.classList.add('opacity-0');
+    })
+}
 
-    controls.addEventListener('start', () => {hideTitle(title);});
+function showOverlay(overlay) {
+    requestAnimationFrame(() => {
+        overlay.classList.add('opacity-100');
+        overlay.classList.remove('opacity-0');
+    })
+}
+
+export function indicateUserClick() {
+    setTimeout(() => {
+        const overlay = document.getElementById('indicateUserClick');
+        showOverlay(overlay);
+        initTitleTrans();
+    }, 2000);
+}
+
+export function controlListeners(controls) {
+    const title = document.getElementById('titleText');
+    const overlay = document.getElementById('userPrompt');
+
+    controls.addEventListener('start', () => {hideTitle(title); hideOverlay(overlay);});
     controls.addEventListener('end', () => {showTitle(title);});
+}
+
+export function initTitleTrans() {
+    const title = document.getElementById('titleText');
+
+    title.classList.remove('opacity-0', '-translate-y-6');
+    title.classList.add('opacity-100', 'translate-y-0');
 }
 
 export function registerCLickableObjects(room) {
