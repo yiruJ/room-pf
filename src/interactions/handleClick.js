@@ -12,7 +12,6 @@ export function handleObjectClick(ctx, interactables) {
         if (obj.userData.clicked == true) return;
 
         ctx.controls.minDistance = 0;
-        ctx.controls.enableRotate = false;
         
         const type = getStrategyType(obj);
         const strat = getStrategy(type);

@@ -16,6 +16,7 @@ export default {
         obj.localToWorld(forward); obj.worldToLocal(forward); obj.position.add(forward);
     },
     onClick(ctx, obj) {
+        ctx.controls.enableRotate = false;
         clearHoverFeedback(ctx.hoverState, obj);
         obj.userData.clicked = true;
         ctx.actions.zoomTo(ctx.camera, ctx.controls, {x:2.75, y: 1.4, z:3.42}, {x:3.7, y:1.4, z: 0.1});
