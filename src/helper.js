@@ -64,7 +64,7 @@ export function indicateUserClick() {
     setTimeout(() => {
         const overlay = document.getElementById('indicateUserClick');
         showOverlay(overlay);
-    }, 2000);
+    }, 300);
 }
 
 export function controlListeners(controls, room) {
@@ -91,7 +91,7 @@ export function controlListeners(controls, room) {
             hideTitle(title);
         }
     });
-    
+
     controls.addEventListener('end', () => {
         if (skipFirstEnd) {
             showTitle(title);

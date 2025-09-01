@@ -21,8 +21,6 @@ export function handleObjectClick(ctx, interactables) {
             obj.userData.clicked = true;
             ctx.showBackButton();
         }
-
-        // hideHotspots();
         strat.onClick(ctx, obj);
     })
 }
